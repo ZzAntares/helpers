@@ -31,4 +31,24 @@ class NumberToLetterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->numberToLetter->parse('123.891'));
         $this->assertEquals($expected, $this->numberToLetter->parse(123.891));
     }
+
+    public function testNumberToLetterWithIntegerUnit()
+    {
+        $expected = 'Novecientos treinta pesos 90';
+
+        $this->assertEquals(
+            $expected,
+            $this->numberToLetter->parse('930.90', false, '', 'pesos')
+        );
+    }
+
+    public function testNumberToLetterWithCents()
+    {
+        $expected = 'Novecientos treinta pesos con noventa centavos';
+
+        $this->assertEquals(
+            $expected,
+            $this->numberToLetter->parse('930.90', true, 'con', 'pesos', 'centavos')
+        );
+    }
 }

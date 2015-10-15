@@ -8,10 +8,22 @@
  */
 
 if (!function_exists('number_to_letter')) {
-    function number_to_letter($number)
-    {
+    function number_to_letter(
+        $number,
+        $parseDecimal = true,
+        $joinWith = 'con',
+        $integerUnit = '',
+        $decimalUnit = ''
+    ) {
         $numberToLetter = new ZzAntares\Helpers\Converters\NumberToLetter();
-        return $numberToLetter->parse($number);
+
+        return $numberToLetter->parse(
+            $number,
+            $parseDecimal,
+            $joinWith,
+            $integerUnit,
+            $decimalUnit
+        );
     }
 }
 

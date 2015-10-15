@@ -11,8 +11,13 @@ namespace ZzAntares\Helpers\Converters;
 
 class NumberToLetter
 {
-    public function parse($number, $joinWith = 'con')
-    {
+    public function parse(
+        $number,
+        $parseDecimal = true,
+        $joinWith = 'con',
+        $integerUnit = '',
+        $decimalUnit = ''
+    ) {
         if (!is_numeric($number)) {
             throw \InvalidArgumentException("Not a number.");
         }
@@ -26,8 +31,22 @@ class NumberToLetter
 
         $text = $this->translate($string);
 
+        if (!empty($integerUnit)) {
+            $text .= ' ' . $integerUnit;
+        }
+
         if (isset($numbers[1])) {
-            $text .= ' ' . $joinWith . ' ' . $this->translate($numbers[1]);
+            $decimal = $parseDecimal ? $this->translate($numbers[1]) : $numbers[1];
+
+            if (!empty($joinWith)) {
+                $joinWith .= ' ';
+            }
+
+            $text .= ' ' . $joinWith . $decimal;
+
+            if (!empty($decimalUnit)) {
+                $text .= ' ' . $decimalUnit;
+            }
         }
 
         return ucfirst($text);
