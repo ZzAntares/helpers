@@ -33,3 +33,12 @@ if (!function_exists('in_array_all')) {
         return !array_diff($needles, $haystack);
     }
 }
+
+if (!function_exists('from_usd_to_mxn')) {
+    function from_usd_to_mxn($amount)
+    {
+        $exchange = new ZzAntares\Helpers\Converters\ExchangeRates();
+
+        return $exchange->fromUsd($amount)->toMxn();
+    }
+}
