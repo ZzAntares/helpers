@@ -35,7 +35,7 @@ if (!function_exists('in_array_all')) {
 }
 
 if (!function_exists('from_usd_to_mxn')) {
-    function from_usd_to_mxn($amount)
+    function from_usd_to_mxn($amount = 1)
     {
         $exchange = new ZzAntares\Helpers\Converters\ExchangeRates();
 
