@@ -9,8 +9,27 @@
 
 namespace ZzAntares\Helpers\Converters;
 
+use Carbon\Carbon;
+use ZzAntares\Helpers\Utils\Helpers;
+
 class ExchangeRates
 {
+    /**
+     * Instance of the helper class.
+     *
+     * @var ZzAntares\Helpers\Utils\Helpers
+     */
+    private $helpers;
+
+
+    /**
+     * Construct.
+     */
+    public function __construct()
+    {
+        $this->helpers = new Helpers();
+    }
+
     /**
      * Bootstraps the currency conversion process, by giving value in MXN will
      * later be converted to another currency, i.e. USD.
@@ -50,7 +69,13 @@ class ExchangeRates
      */
     public function usdMxn()
     {
-        $url = 'http://dof.gob.mx/indicadores.php';
+        $query = http_build_query([
+            'cod_tipo_indicador' => '158',
+            'dfecha' => Carbon::now()->subMonth()->format('d/m/Y'),
+            'hfecha' => Carbon::now()->format('d/m/Y'),
+        ]);
+
+        $url = 'http://dof.gob.mx/indicadores_detalle.php?' . $query;
         $webContent = file_get_contents($url);
 
         if (!$webContent) {
@@ -60,28 +85,21 @@ class ExchangeRates
         $dom = new \DOMDocument();
         libxml_use_internal_errors(true);
         $dom->loadHTML($webContent);
-        $items = $dom->getElementsByTagName('span');
+        $items = $dom->getElementsByTagName('tr');
 
+        $entries = [];
         foreach ($items as $tag) {
             if (!$tag->hasAttribute('class')) {
                 continue;
             }
 
-            if ($tag->getAttribute('class') != 'tituloBloque4') {
+            if ($tag->getAttribute('class') != 'Celda 1') {
                 continue;
             }
 
-            if ($tag->nodeValue != 'DOLAR') {
-                continue;
-            }
-
-            $result = preg_match(
-                '/(\d+.\d+)/',
-                $tag->parentNode->nodeValue,
-                $matches
-            );
-
-            return $result ? round(floatval($matches[0]), 4) : false;
+            $entries[] = $this->helpers->parseNodes($tag->childNodes);
         }
+
+        return $this->helpers->mostRecentEntry($entries)['rate'];
     }
 }
